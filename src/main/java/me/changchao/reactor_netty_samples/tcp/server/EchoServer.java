@@ -13,10 +13,10 @@ public class EchoServer {
 	public static void main(String[] args) {
 		int listenPort = 9999;
 
-		DisposableServer server = TcpServer
-				.create().port(listenPort).wiretap(true).handle((inbound, outbound) -> outbound
-						.options(SendOptions::flushOnEach).sendString(inbound.receive().asString()).neverComplete())
-				.bindNow();
+		DisposableServer server = TcpServer.create().port(listenPort).doOnConnection(connection -> {
+			logger.debug("connection:" + connection);
+		}).wiretap(true).handle((inbound, outbound) -> outbound.options(SendOptions::flushOnEach)
+				.sendString(inbound.receive().asString()).neverComplete()).bindNow();
 
 		server.onDispose().block();
 	}
