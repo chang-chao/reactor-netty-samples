@@ -3,7 +3,11 @@ package me.changchao.reactor_netty_samples.tcp.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.DefaultEventExecutor;
 import reactor.netty.DisposableServer;
+import reactor.netty.FutureMono;
 import reactor.netty.NettyPipeline.SendOptions;
 import reactor.netty.tcp.TcpServer;
 
@@ -12,6 +16,7 @@ public class EchoServer {
 
 	public static void main(String[] args) {
 		int listenPort = 9999;
+		ChannelGroup group = new DefaultChannelGroup(new DefaultEventExecutor());
 
 		DisposableServer server = TcpServer.create().port(listenPort).doOnConnection(connection -> {
 			// only when client is connected, this is OK
@@ -24,6 +29,11 @@ public class EchoServer {
 				(inbound, outbound) -> outbound.options(SendOptions::flushOnEach)
 						.sendString(inbound.receive().asString()).neverComplete())
 				.bindNow();
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			FutureMono.from(group.close()).block();
+			server.disposeNow();
+		}));
 
 		server.onDispose().block();
 	}
