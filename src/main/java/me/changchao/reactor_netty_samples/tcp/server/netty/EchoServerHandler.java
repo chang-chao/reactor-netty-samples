@@ -15,6 +15,9 @@
  */
 package me.changchao.reactor_netty_samples.tcp.server.netty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -24,14 +27,53 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 @Sharable
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+	final static Logger logger = LoggerFactory.getLogger(EchoServerHandler.class);
 
     @Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelRegistered(ctx);
+		logger.debug("channelRegistered");
+	}
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelUnregistered(ctx);
+		logger.debug("channelUnregistered");
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		super.channelActive(ctx);
+		logger.debug("channelActive");
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		logger.debug("channelInactive");
+		super.channelInactive(ctx);
+	}
+
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		logger.debug("userEventTriggered");
+		super.userEventTriggered(ctx, evt);
+	}
+
+	@Override
+	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+		logger.debug("channelWritabilityChanged");
+		super.channelWritabilityChanged(ctx);
+	}
+
+	@Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+		logger.debug("channelRead");
         ctx.write(msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
+		logger.debug("channelReadComplete");
         ctx.flush();
     }
 
