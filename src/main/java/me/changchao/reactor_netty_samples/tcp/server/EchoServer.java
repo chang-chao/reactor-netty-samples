@@ -20,6 +20,7 @@ public class EchoServer {
 
 		DisposableServer server = TcpServer.create().port(listenPort).doOnConnection(connection -> {
 			// only when client is connected, this is OK
+			group.add(connection.channel());
 			logger.debug("connection:" + connection);
 		}).wiretap(true).observe((connection, newState) -> {
 			// only called when connection is connected and configured, but not disconnected
