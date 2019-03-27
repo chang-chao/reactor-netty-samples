@@ -14,9 +14,15 @@ public class EchoServer {
 		int listenPort = 9999;
 
 		DisposableServer server = TcpServer.create().port(listenPort).doOnConnection(connection -> {
+			// only when client is connected
 			logger.debug("connection:" + connection);
-		}).wiretap(true).handle((inbound, outbound) -> outbound.options(SendOptions::flushOnEach)
-				.sendString(inbound.receive().asString()).neverComplete()).bindNow();
+		}).wiretap(true).observe((connection, newState) -> {
+			// only when connected and configured, but no disconnected
+			logger.debug("connection:" + connection + ", newState=" + newState);
+		}).handle(
+				(inbound, outbound) -> outbound.options(SendOptions::flushOnEach)
+						.sendString(inbound.receive().asString()).neverComplete())
+				.bindNow();
 
 		server.onDispose().block();
 	}
