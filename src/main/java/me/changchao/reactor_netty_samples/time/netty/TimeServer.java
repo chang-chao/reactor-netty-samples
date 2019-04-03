@@ -46,7 +46,8 @@ public class TimeServer {
         }
     }
 
-    // rdate -o 8080 -p localhost
+    // rdate -n 8080 -p localhost
+    // https://github.com/njh/rdate/blob/91d84610e3695e90a884e2953908e95a856a9b74/src/rdate.c#L301
     public static void main(String[] args) throws Exception {
         int port;
         if (args.length > 0) {
